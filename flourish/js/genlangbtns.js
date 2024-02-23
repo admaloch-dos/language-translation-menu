@@ -1,9 +1,13 @@
 
 const setCurrLang = (googTranslateCode) => {
     const currLangIcon = document.querySelector('#curr-language-icon')
+    const mainLanguageIcon = document.querySelector('#flourish_icon')
+    const topLanguageIcon = document.querySelector('.top-lang-icon')
     const currLangText = document.querySelector('#curr-language-text')
     let currItem = worldLanguageData.filter(item => item.LanguageCodeGoogleTrans === googTranslateCode)[0]
     currLangIcon.src = `./flourish/img/language/${currItem.FlorishIconfilename}`;
+    mainLanguageIcon.src = `./flourish/img/language/${currItem.FlorishIconfilename}`;
+    topLanguageIcon.src = `./flourish/img/language/${currItem.FlorishIconfilename}`;
     currLangText.innerText = currItem.LanguageAutonym;
 }
 

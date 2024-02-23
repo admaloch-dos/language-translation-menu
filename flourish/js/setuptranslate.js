@@ -1,42 +1,29 @@
 // translate language section ------------------->
 const dismissGoogleTranslate = () => {
-    removeWidgetControls(['google-translate'])
-    widgetItemObj.isTranslated = false
     $.removeCookie('translateLanguage');
     $.removeCookie('googTransCode');
-    checkIfWidgetActive()
-    var iframe = document.getElementsByClassName('goog-te-banner-frame')[0]
-        || document.getElementById(':1.container');
-    if (!iframe) return;
-    var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
-    var restore_el = innerDoc.getElementsByTagName("button");
-    for (var i = 0; i < restore_el.length; i++) {
-        if (restore_el[i].id.indexOf("restore") >= 0) {
-            restore_el[i].click();
-            return;
-        }
-    }
+    document.querySelector('#en').click()
 }
 
-function googleTranslateElementInit() {
 
+function googleTranslateElementInit() {
     new google.translate.TranslateElement({
         pageLanguage: 'en',
         layout: google.translate.TranslateElement
     }, 'google_translate_element');
     isTranslateSuccessful = true
-
 }
 
 const handleTranslateCookieLoad = () => {
     if ($.cookie('googtrans') && $.cookie('googtrans') !== '/en/en') {
+        document.querySelector('.main-reset-icon').classList.remove('d-none')
         const googleTransCode = $.cookie('googtrans').slice(4)
         setCurrLang(googleTransCode)
         if ($.cookie('translateLanguage')) {
             const currLanguage = $.cookie('translateLanguage')
             widgetItemObj.isTranslated = true
-            addWidgetControls('google-translate', `Translated to ${currLanguage}`)
-            $('#tail').addClass('transform-tail')
+
+
         }
         checkIfWidgetActive()
     }
@@ -47,68 +34,25 @@ function triggerChange(element) {
     element.dispatchEvent(changeEvent);
 }
 
-const translateWidgetControls = (selectVal, currLanguage) => {
-    if (selectVal !== 'en') {
 
-        removeWidgetControls(['google-translate'])
 
-        widgetItemObj.isTranslated = true
-        $.cookie("translateLanguage", currLanguage, { expires: 30 });
-        addWidgetControls('google-translate', `Translated to ${currLanguage}`)
 
-    } else {
-        dismissGoogleTranslate()
-    }
-    checkIfWidgetActive()
-}
-
-const russianStyleLangs = ['az', 'be', 'bg', 'kk', 'ky', 'mk', 'mn', 'sr', 'tg', 'tt', 'uk']
-const hindiStyleLanguages = ['bho', 'doi', 'gom', 'mai', 'mr', 'ne', 'sa']
-const indonesianStyleLanguages = ['jv', 'su']
 
 const translatePageHandler = (selector) => {
 
     if (selector) {
         console.log('initialize google translate successful')
         handleTranslateCookieLoad()
-        selector.addEventListener("change", (event) => {
-            $('#tail').addClass('transform-tail')
-
-            const selectVal = event.target.value
-            const currLanguage = selector.options[selector.selectedIndex].text
-
-            translateWidgetControls(selectVal, currLanguage)
-        });
         document.querySelectorAll('.lang-translate-selector').forEach(btn => {
             btn.addEventListener('click', () => {
-                let voiceList = speechSynthesis.getVoices();
-                voiceList.forEach(voiceItem => {
-                    const slicedId = voiceItem.lang.split("-")[0];
-                    if (voiceItem.lang === btn.id || slicedId === btn.id) {
-                        triggerEventFunc('#voice', voiceItem.name)
-                    }
-                })
-                russianStyleLangs.forEach(lang => {
-                    if (btn.id === lang) {
-                        triggerEventFunc('#voice', 'Google русский')
-                    }
-                })
-                hindiStyleLanguages.forEach(lang => {
-                    if (btn.id === lang) {
-                        triggerEventFunc('#voice', 'Google हिन्दी')
-                    }
-                })
-                indonesianStyleLanguages.forEach(lang => {
-                    if (btn.id === lang) {
-                        triggerEventFunc('#voice', 'Google Bahasa Indonesia')
-                    }
-                })
                 let newSelectVal = btn.id
                 selector.value = newSelectVal
                 triggerChange(selector);
                 setCurrLang(newSelectVal)
-                resetMaskOnTranslate()
-
+                document.querySelector('.main-reset-icon').classList.remove('d-none')
+                if (btn.id === 'en') {
+                    document.querySelector('.main-reset-icon').classList.add('d-none')
+                }
             })
         })
     }
@@ -147,7 +91,7 @@ const attemptTranslation = () => {
 attemptTranslation();
 
 const getCurrState = () => {
-    const stateDataAttribute = (document.getElementById('flourish-widget-main').dataset.state)
+    const stateDataAttribute = (document.getElementById('flourish-more-languages-btn').dataset.state)
     return stateDataAttribute
         ? stateDataAttribute.charAt(0).toUpperCase() + stateDataAttribute.slice(1)
         : "United States"
@@ -181,8 +125,7 @@ const genLanguageBtns = (arr, destination) => {
       `
         destination.append(langBtnContainer)
     }
-    const flourishLangSearchBtn = document.getElementById('flourish-language-search')
-    flourishLangSearchBtn.parentNode.appendChild(flourishLangSearchBtn)
+
 }
 
 const stateBtnIconContainer = document.getElementById('flourish-language-presets')
